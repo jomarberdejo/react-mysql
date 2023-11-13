@@ -3,10 +3,13 @@ const express = require('express')
 const cors = require('cors');
 require('dotenv').config();
 
-const studentRoutes = require('./routes/students')
+const usersRoute = require('./routes/users')
+const reportsRoute = require('./routes/reports')
 
 const app = express();
 app.use(cors())
+app.use(express.json());
+
 const connection = require('./databaseConfig/db')
 
 
@@ -18,5 +21,6 @@ if (connection){
     })
 }
 
+app.use('/api/users', usersRoute)
+app.use('/api/reports', reportsRoute)
 
-app.use('/api/students', studentRoutes)

@@ -1,0 +1,12 @@
+html{
+    color-scheme: dark;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 200px;
+    
+    margin: 20px auto;
+}
