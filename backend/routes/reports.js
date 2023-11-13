@@ -1,6 +1,10 @@
 
 const express = require('express')
 
+
+
+const multer = require('multer');
+const path = require('path');
 const router = express.Router();
 const connection = require('../databaseConfig/db')
 
@@ -11,6 +15,7 @@ router.get('/', (req, res) => {
     r.report_id,
     r.severity, 
     r.description, 
+    r.file_path,
     DATE_FORMAT(r.reported_at, '%Y-%m-%d %H:%i:%s') AS reported_at, 
     u.firstname
 FROM 
@@ -37,6 +42,7 @@ router.get('/:id' , (req, res) => {
     r.report_id,
     r.severity, 
     r.description, 
+    r.file_path,
     DATE_FORMAT(r.reported_at, '%Y-%m-%d %H:%i:%s') AS reported_at, 
     u.firstname
 FROM 
@@ -54,15 +60,37 @@ JOIN
     });
 })
 
-router.post('/', (req, res) => {
+
+
+
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); 
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+
+const upload = multer({ storage: storage });
+
+
+router.post('/', upload.single('file'), (req, res) => {
     const { severity, description, userId } = req.body;
-    const sql = 'INSERT INTO reports (severity, description, user_id) VALUES (?, ?, ?)';
-    const values = [severity, description, userId];
+    const file = req.file;
+    console.log('File details:', file);
+
+    const sql = 'INSERT INTO reports (severity, description, user_id, file_path) VALUES (?, ?, ?, ?)';
+    const values = [severity, description, userId, file.path];
+
     connection.query(sql, values, (error, result) => {
         if (error) {
-            res.json({ error: error.message });
+            res.status(500).json({ error: error.message });
         } else {
-            res.json({ message: 'Report added successfully', result });
+            res.status(200).json({ message: 'Report added successfully', result });
         }
     });
 });

@@ -57,7 +57,7 @@ const ReportList = (props) => {
       console.log(err)
     }
   }
-
+  const imageUrl = `http://localhost:4000/${props.file_path}`
   return (
     <>
 
@@ -66,6 +66,7 @@ const ReportList = (props) => {
     <p>{props.description}</p>
     <p>{props.reported_at}</p>
     <p>{props.firstname}</p>
+    <img src={imageUrl} alt= {imageUrl } />
 
     <button
     className='border border-blue-200 cursor-pointer'
